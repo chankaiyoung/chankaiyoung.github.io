@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cantonese Pronunciation Guide</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --bg-color: #f4f6f8;
+            --card-bg: #ffffff;
+            --text-main: #333333;
+            --text-muted: #666666;
+            --accent-color: #4a90e2;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 3rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            font-weight: 300;
+            color: var(--primary-color);
+            margin-bottom: 3rem;
+            text-align: center;
+            font-size: 2.5rem;
+        }
+
+        #guide-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 2.5rem 1.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .character {
+            font-size: 5rem;
+            font-weight: 500;
+            line-height: 1;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .jyutping {
+            font-size: 1.75rem;
+            font-weight: 400;
+            margin-bottom: 0.25rem;
+            color: var(--primary-color);
+        }
+
+        .ipa {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            font-family: "Charis SIL", "Doulos SIL", "Times New Roman", serif;
+        }
+
+        .play-btn {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 70px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            box-shadow: 0 4px 10px rgba(74, 144, 226, 0.3);
+        }
+
+        .play-btn:hover {
+            background-color: #357abd;
+            transform: scale(1.05);
+        }
+
+        .play-btn:active {
+            transform: scale(0.95);
+        }
+
+        .play-btn svg {
+            width: 32px;
+            height: 32px;
+            fill: currentColor;
+            margin-left: 6px; /* Optical alignment for the play triangle */
+        }
+
+        .loading, .error {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            text-align: center;
+            grid-column: 1 / -1;
+            padding: 2rem;
+        }
+
+        .error {
+            color: #d32f2f;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Pronunciation Guide</h1>
+    <div id="guide-container">
+        <div class="loading">Loading guide from Google Sheets...</div>
+    </div>
+
+    <script>
+        // Google Sheet Setup
+        const sheetId = '1Y6yB_tXm1ETFR7lzqlt7NqgA1EXmuszpn7PSlW4xMzg';
+        const gid = '130844584';
+        const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}`;
+
+        // Helper function to extract the Google Drive file ID and create a direct download link
+        function getDirectAudioUrl(url) {
+            if (!url) return '';
+            const fileIdMatch = url.match(/[-\w]{25,}/);
+            if (fileIdMatch) {
+                return `https://drive.google.com/uc?export=download&id=${fileIdMatch[0]}`;
+            }
+            return url;
+        }
+
+        // Robust CSV Parser
+        function parseCSV(str) {
+            const result = [];
+            let row = [];
+            let inQuotes = false;
+            let value = '';
+            for (let i = 0; i < str.length; i++) {
+                let char = str[i];
+                if (char === '"') {
+                    inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                    row.push(value.trim());
+                    value = '';
+                } else if ((char === '\n' || char === '\r') && !inQuotes) {
+                    if (char === '\r') continue; 
+                    row.push(value.trim());
+                    result.push(row);
+                    row = [];
+                    value = '';
+                } else {
+                    value += char;
+                }
+            }
+            if (value || row.length > 0) {
+                row.push(value.trim());
+                result.push(row);
+            }
+            return result;
+        }
+
+        async function fetchAndRenderData() {
+            const container = document.getElementById('guide-container');
+            try {
+                const response = await fetch(csvUrl);
+                if (!response.ok) throw new Error('Network response was not ok');
+                const text = await response.text();
+                
+                const rows = parseCSV(text);
+                if (rows.length < 2) {
+                    throw new Error("No data found in the sheet.");
+                }
+
+                // Extract Headers
+                const headers = rows[0].map(h => h.toLowerCase());
+                const charIdx = headers.indexOf('character');
+                const jyutpingIdx = headers.indexOf('jyutping');
+                const ipaIdx = headers.indexOf('ipa');
+                const audioIdx = headers.indexOf('audio');
+
+                container.innerHTML = ''; // Clear loading message
+                
+                // Start from index 1 to skip headers
+                for (let i = 1; i < rows.length; i++) {
+                    const row = rows[i];
+                    if (!row[charIdx]) continue; // Skip empty rows
+
+                    const char = row[charIdx] || '';
+                    const jyutping = row[jyutpingIdx] || '';
+                    const ipa = row[ipaIdx] || '';
+                    const audioUrl = getDirectAudioUrl(row[audioIdx] || '');
+
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    
+                    card.innerHTML = `
+                        <div class="character">${char}</div>
+                        <div class="jyutping">${jyutping}</div>
+                        <div class="ipa">[${ipa}]</div>
+                        ${audioUrl ? `
+                        <button class="play-btn" aria-label="Play audio for ${char}" onclick="playAudio('${audioUrl}')">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M8 5v14l11-7z"/>
+                            </svg>
+                        </button>
+                        ` : ''}
+                    `;
+                    container.appendChild(card);
+                }
+            } catch (error) {
+                container.innerHTML = `
+                    <div class="error">
+                        Unable to load data. Please make sure the Google Sheet's sharing settings are set to "Anyone with the link can view".
+                    </div>`;
+                console.error('Error fetching data:', error);
+            }
+        }
+
+        // Global audio element to prevent overlapping playbacks
+        let currentAudio = null;
+        window.playAudio = function(url) {
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+            }
+            currentAudio = new Audio(url);
+            currentAudio.play().catch(e => {
+                console.error("Audio playback failed:", e);
+                alert("Audio playback failed. The browser might be blocking the audio or the Google Drive file is restricted.");
+            });
+        }
+
+        // Initialize the app
+        fetchAndRenderData();
+    </script>
+</body>
+</html>
