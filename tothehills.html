@@ -19,7 +19,7 @@
             background-color: var(--bg-color);
             color: var(--text-main);
             margin: 0;
-            padding: 3rem 1.5rem;
+            padding: 2rem 1rem;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -28,68 +28,69 @@
         h1 {
             font-weight: 300;
             color: var(--primary-color);
-            margin-bottom: 3rem;
+            margin-bottom: 2.5rem;
             text-align: center;
-            font-size: 2.5rem;
+            font-size: 2.2rem;
         }
 
-        /* The main structural container holds phrases vertically */
         #guide-container {
             display: flex;
             flex-direction: column;
-            gap: 4rem; /* Generous spacing between distinct lines/phrases */
             width: 100%;
-            max-width: 1400px;
+            max-width: 1280px; /* Perfectly aligns with the 10-card ceiling */
+            align-items: center;
         }
 
-        /* Each phrase row groups characters together horizontally */
+        /* Responsive Grid Framework */
         .phrase-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1.25rem;
-            justify-content: center;
+            display: grid;
+            /* Mobile Default: Scaled down to fit at least 5 characters on small screens */
+            grid-template-columns: repeat(auto-fill, minmax(58px, 1fr));
+            gap: 8px;
             width: 100%;
+            justify-content: center;
         }
 
         .card {
             background: var(--card-bg);
-            border-radius: 16px;
-            padding: 2rem 1.25rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border-radius: 12px;
+            padding: 1rem 0.25rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
-            flex: 0 1 150px; /* Gives cards a uniform starting width */
-            min-width: 130px;
         }
 
         .card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 14px rgba(0,0,0,0.08);
         }
 
+        /* Mobile Typography Scaling */
         .character {
-            font-size: 4.5rem;
+            font-size: 2.4rem;
             font-weight: 500;
             line-height: 1.1;
-            margin-bottom: 0.75rem;
+            margin-bottom: 0.4rem;
             color: var(--primary-color);
         }
 
         .jyutping {
-            font-size: 1.5rem;
-            font-weight: 400;
-            margin-bottom: 0.25rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 0.1rem;
             color: var(--primary-color);
+            word-break: break-word;
         }
 
         .ipa {
-            font-size: 1.1rem;
+            font-size: 0.75rem;
             color: var(--text-muted);
-            margin-bottom: 1.5rem;
+            margin-bottom: 0.8rem;
             font-family: "Charis SIL", "Doulos SIL", "Times New Roman", serif;
+            word-break: break-word;
         }
 
         .play-btn {
@@ -97,35 +98,34 @@
             color: white;
             border: none;
             border-radius: 50%;
-            width: 60px;
-            height: 60px;
+            width: 42px;
+            height: 42px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: background-color 0.2s, transform 0.1s;
-            box-shadow: 0 4px 10px rgba(74, 144, 226, 0.25);
-            margin-top: auto; /* Pushes button to bottom if cards vary in text height */
-        }
-
-        .play-btn:hover {
-            background-color: #357abd;
-            transform: scale(1.05);
-        }
-
-        .play-btn:active {
-            transform: scale(0.95);
+            box-shadow: 0 3px 6px rgba(74, 144, 226, 0.2);
+            margin-top: auto; /* Keeps buttons level if text heights vary slightly */
         }
 
         .play-btn svg {
-            width: 28px;
-            height: 28px;
+            width: 18px;
+            height: 18px;
             fill: currentColor;
-            margin-left: 4px; /* Optical adjustment for play arrow placement */
+            margin-left: 3px;
+        }
+
+        /* Minimalist Phrase Divider Line */
+        .divider {
+            width: 100%;
+            border: none;
+            height: 1px;
+            background: linear-gradient(to right, transparent, #dcdfe3, transparent);
+            margin: 2.5rem 0;
         }
 
         .loading, .error {
-            font-size: 1.25rem;
+            font-size: 1.1rem;
             color: var(--text-muted);
             text-align: center;
             padding: 2rem;
@@ -133,6 +133,61 @@
 
         .error {
             color: #d32f2f;
+        }
+
+        /* Desktop Configurations (Screens 768px and wider) */
+        @media (min-width: 768px) {
+            body {
+                padding: 3rem 2rem;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+                margin-bottom: 4rem;
+            }
+
+            /* Caps layout precisely at 10 items maximum per row */
+            .phrase-row {
+                grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+                gap: 20px;
+                max-width: 1280px; /* (110px * 10 cards) + (20px * 9 gaps) = 1280px */
+            }
+
+            .card {
+                border-radius: 16px;
+                padding: 2.5rem 1rem;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            }
+
+            .character {
+                font-size: 4.5rem;
+                margin-bottom: 0.75rem;
+            }
+
+            .jyutping {
+                font-size: 1.5rem;
+                margin-bottom: 0.25rem;
+            }
+
+            .ipa {
+                font-size: 1.1rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .play-btn {
+                width: 60px;
+                height: 60px;
+            }
+
+            .play-btn svg {
+                width: 26px;
+                height: 26px;
+                margin-left: 4px;
+            }
+
+            .divider {
+                margin: 4rem 0;
+            }
         }
     </style>
 </head>
@@ -204,9 +259,8 @@
                 const ipaIdx = headers.indexOf('ipa');
                 const audioIdx = headers.indexOf('audio');
 
-                container.innerHTML = ''; // Clear loading element
+                container.innerHTML = ''; 
                 
-                // Track row segmentation
                 let currentPhraseRow = document.createElement('div');
                 currentPhraseRow.className = 'phrase-row';
                 container.appendChild(currentPhraseRow);
@@ -214,14 +268,16 @@
 
                 for (let i = 1; i < rows.length; i++) {
                     const row = rows[i];
-                    
-                    // Determine if the row is blank in the character column
                     const isBlankRow = !row[charIdx] || row[charIdx].trim() === '';
 
                     if (isBlankRow) {
-                        // If we encounter a blank row and our active phrase row contains data,
-                        // prepare a brand new line container for the next batch of words.
                         if (activeCardsInRow > 0) {
+                            // 1. Insert elegant divider element
+                            const divider = document.createElement('div');
+                            divider.className = 'divider';
+                            container.appendChild(divider);
+
+                            // 2. Open a clean, fresh structural row container
                             currentPhraseRow = document.createElement('div');
                             currentPhraseRow.className = 'phrase-row';
                             container.appendChild(currentPhraseRow);
@@ -254,15 +310,19 @@
                     activeCardsInRow++;
                 }
 
-                // Clean up trailing empty line element if the sheet ended with a blank space
-                if (activeCardsInRow === 0 && currentPhraseRow.parentNode) {
+                // Clean up defense: prevents empty trailing lines or dividers if the sheet concludes on blanks
+                if (activeCardsInRow === 0 && currentPhraseRow && currentPhraseRow.parentNode) {
                     currentPhraseRow.remove();
+                    const trailingElement = container.lastElementChild;
+                    if (trailingElement && trailingElement.classList.contains('divider')) {
+                        trailingElement.remove();
+                    }
                 }
 
             } catch (error) {
                 container.innerHTML = `
                     <div class="error">
-                        Unable to load data. Please make sure the Google Sheet's sharing settings are set to "Anyone with the link can view".
+                        Unable to load data. Please verify your Google Sheet sharing permissions are configured properly.
                     </div>`;
                 console.error('Error fetching data:', error);
             }
