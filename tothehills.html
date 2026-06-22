@@ -6,253 +6,196 @@
     <title>Cantonese Pronunciation Guide</title>
     <style>
         :root {
-            /* Grok-inspired dark cosmic palette */
-            --bg-color: #0a0a0a;
-            --surface-color: #121212;
-            --card-bg: #1a1a1a;
-            --text-primary: #f0f0f0;
-            --text-secondary: #b0b0b0;
-            --accent: #00eaff;
-            --accent-soft: #00b8cc;
-            --border-color: rgba(0, 234, 255, 0.1);
-        }
-
-        * {
-            box-sizing: border-box;
+            --primary-color: #2c3e50;
+            --bg-color: #f4f6f8;
+            --card-bg: #ffffff;
+            --text-main: #333333;
+            --text-muted: #666666;
+            --accent-color: #4a90e2;
+            
+            /* Desktop Layout Configuration */
+            --card-width: 115px;
+            --gap-size: 1rem;
+            --char-size: 3.5rem;
+            --jyutping-size: 1.25rem;
+            --ipa-size: 0.95rem;
+            --btn-size: 48px;
         }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-color);
-            color: var(--text-primary);
+            color: var(--text-main);
             margin: 0;
-            padding: 3rem 1rem 4rem;
+            padding: 3rem 1rem;
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-height: 100vh;
-            line-height: 1.6;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 4rem;
-            width: 100%;
-            max-width: 1200px;
         }
 
         h1 {
-            font-size: 3.2rem;
             font-weight: 300;
-            letter-spacing: -0.03em;
-            margin: 0 0 0.5rem 0;
-            background: linear-gradient(90deg, #ffffff, var(--accent), #ffffff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .subtitle {
-            font-size: 1.1rem;
-            color: var(--text-secondary);
-            font-weight: 400;
+            color: var(--primary-color);
+            margin-bottom: 3rem;
+            text-align: center;
+            font-size: 2.2rem;
             letter-spacing: 0.5px;
-            opacity: 0.85;
         }
 
         #guide-container {
             display: flex;
             flex-direction: column;
-            width: 100%;
-            max-width: 1280px;
             align-items: center;
+            width: 100%;
+            max-width: 1300px;
         }
 
-        /* Responsive Grid */
+        /* Desktop Mode: Flex wrapping limited to 10 cards max width */
         .phrase-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 24px;
-            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--gap-size);
             justify-content: center;
+            width: 100%;
+            /* Strict width constraint: 10 cards + 9 gaps */
+            max-width: calc((var(--card-width) * 10) + (var(--gap-size) * 9));
+            box-sizing: border-box;
         }
 
         .card {
             background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            padding: 2.25rem 1.25rem 2rem;
+            border-radius: 14px;
+            padding: 1.5rem 0.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
-            transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(circle at 50% 20%, rgba(0, 234, 255, 0.08), transparent 70%);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            pointer-events: none;
+            width: var(--card-width);
+            box-sizing: border-box;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
         .card:hover {
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 20px 40px -10px rgba(0, 234, 255, 0.15);
-            border-color: rgba(0, 234, 255, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.08);
         }
 
-        .card:hover::before {
-            opacity: 1;
-        }
-
-        /* Typography */
         .character {
-            font-size: 5.2rem;
+            font-size: var(--char-size);
             font-weight: 500;
-            line-height: 1;
-            margin-bottom: 1rem;
-            color: #ffffff;
-            transition: transform 0.2s ease;
-        }
-
-        .card:hover .character {
-            transform: scale(1.08);
+            line-height: 1.1;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
         }
 
         .jyutping {
-            font-size: 1.35rem;
-            font-weight: 500;
-            margin-bottom: 0.4rem;
-            color: var(--accent);
-            letter-spacing: 0.5px;
+            font-size: var(--jyutping-size);
+            font-weight: 400;
+            margin-bottom: 0.15rem;
+            color: var(--primary-color);
+            word-break: break-all;
         }
 
         .ipa {
-            font-size: 1rem;
-            color: var(--text-secondary);
-            margin-bottom: 1.75rem;
-            font-family: "Charis SIL", "Doulos SIL", Georgia, serif;
-            letter-spacing: 0.5px;
+            font-size: var(--ipa-size);
+            color: var(--text-muted);
+            margin-bottom: 1.25rem;
+            font-family: "Charis SIL", "Doulos SIL", "Times New Roman", serif;
+            word-break: break-all;
         }
 
         .play-btn {
-            background: transparent;
-            border: 2px solid var(--accent);
-            color: var(--accent);
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
             border-radius: 50%;
-            width: 58px;
-            height: 58px;
+            width: var(--btn-size);
+            height: var(--btn-size);
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
-            margin-top: auto;
+            transition: background-color 0.2s, transform 0.1s;
+            box-shadow: 0 3px 8px rgba(74, 144, 226, 0.2);
+            margin-top: auto; 
         }
 
         .play-btn:hover {
-            background: var(--accent);
-            color: #0a0a0a;
-            transform: scale(1.1);
-            box-shadow: 0 0 25px rgba(0, 234, 255, 0.6);
+            background-color: #357abd;
+            transform: scale(1.05);
         }
 
         .play-btn svg {
-            width: 26px;
-            height: 26px;
+            width: calc(var(--btn-size) * 0.45);
+            height: calc(var(--btn-size) * 0.45);
             fill: currentColor;
             margin-left: 3px;
         }
 
-        /* Elegant Divider */
-        .divider {
-            width: 100%;
-            max-width: 680px;
+        /* Minimalist phrase separation line */
+        .phrase-divider {
+            border: none;
             height: 1px;
-            background: linear-gradient(to right, transparent, var(--accent-soft), transparent);
-            margin: 4.5rem 0 3.5rem;
-            opacity: 0.6;
+            background-color: #dcdde1;
+            width: 100%;
+            max-width: 250px;
+            margin: 2.5rem auto;
+            opacity: 0.7;
         }
 
         .loading, .error {
-            font-size: 1.15rem;
-            color: var(--text-secondary);
+            font-size: 1.1rem;
+            color: var(--text-muted);
             text-align: center;
-            padding: 4rem 2rem;
-            font-style: italic;
+            padding: 2rem;
         }
 
-        .error {
-            color: #ff6b6b;
-        }
+        /* Mobile Viewport Engine: Enforces at least 5 columns dynamically */
+        @media (max-width: 650px) {
+            :root {
+                --gap-size: 0.4rem;
+                --char-size: 2rem;
+                --jyutping-size: 0.85rem;
+                --ipa-size: 0.7rem;
+                --btn-size: 34px;
+            }
 
-        /* Footer credit */
-        footer {
-            margin-top: 6rem;
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-            opacity: 0.7;
-            text-align: center;
-        }
-
-        /* Mobile optimizations */
-        @media (max-width: 768px) {
             body {
-                padding: 2rem 1rem 3rem;
+                padding: 1.5rem 0.5rem;
             }
-            
+
             h1 {
-                font-size: 2.6rem;
+                font-size: 1.6rem;
+                margin-bottom: 2rem;
             }
-            
+
             .phrase-row {
-                grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-                gap: 16px;
+                display: grid;
+                grid-template-columns: repeat(5, 1fr); /* Guarantees minimum 5 cards side by side */
+                max-width: 100%;
+                padding: 0 0.25rem;
             }
-            
+
             .card {
-                padding: 1.75rem 1rem 1.5rem;
+                width: 100%; 
+                padding: 1rem 0.15rem;
+                border-radius: 10px;
             }
             
-            .character {
-                font-size: 3.8rem;
-            }
-            
-            .jyutping {
-                font-size: 1.15rem;
-            }
-            
-            .play-btn {
-                width: 48px;
-                height: 48px;
-            }
-            
-            .play-btn svg {
-                width: 20px;
-                height: 20px;
+            .phrase-divider {
+                margin: 1.75rem auto;
+                max-width: 150px;
             }
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>Pronunciation Guide</h1>
-        <p class="subtitle">Cantonese • Jyutping • IPA</p>
-    </header>
-
+    <h1>Pronunciation Guide</h1>
     <div id="guide-container">
-        <div class="loading">Connecting to the cosmos... Loading pronunciation data</div>
+        <div class="loading">Loading guide from Google Sheets...</div>
     </div>
-
-    <footer>
-        Elegant redesign • Inspired by curiosity
-    </footer>
 
     <script>
         const sheetId = '1Y6yB_tXm1ETFR7lzqlt7NqgA1EXmuszpn7PSlW4xMzg';
@@ -320,7 +263,9 @@
                 let currentPhraseRow = document.createElement('div');
                 currentPhraseRow.className = 'phrase-row';
                 container.appendChild(currentPhraseRow);
+                
                 let activeCardsInRow = 0;
+                let dividerPending = false;
 
                 for (let i = 1; i < rows.length; i++) {
                     const row = rows[i];
@@ -328,16 +273,23 @@
 
                     if (isBlankRow) {
                         if (activeCardsInRow > 0) {
-                            const divider = document.createElement('div');
-                            divider.className = 'divider';
-                            container.appendChild(divider);
-
-                            currentPhraseRow = document.createElement('div');
-                            currentPhraseRow.className = 'phrase-row';
-                            container.appendChild(currentPhraseRow);
+                            dividerPending = true;
                             activeCardsInRow = 0;
                         }
                         continue; 
+                    }
+
+                    // If a divider is flagged as pending, safely insert it before rendering the next row
+                    if (dividerPending) {
+                        const divider = document.createElement('hr');
+                        divider.className = 'phrase-divider';
+                        container.appendChild(divider);
+                        
+                        currentPhraseRow = document.createElement('div');
+                        currentPhraseRow.className = 'phrase-row';
+                        container.appendChild(currentPhraseRow);
+                        
+                        dividerPending = false;
                     }
 
                     const char = row[charIdx].trim();
@@ -364,18 +316,15 @@
                     activeCardsInRow++;
                 }
 
-                if (activeCardsInRow === 0 && currentPhraseRow && currentPhraseRow.parentNode) {
+                // Layout cleanup condition for hanging rows
+                if (activeCardsInRow === 0 && currentPhraseRow.childNodes.length === 0) {
                     currentPhraseRow.remove();
-                    const trailingElement = container.lastElementChild;
-                    if (trailingElement && trailingElement.classList.contains('divider')) {
-                        trailingElement.remove();
-                    }
                 }
 
             } catch (error) {
                 container.innerHTML = `
                     <div class="error">
-                        Unable to load data.<br>Please check Google Sheet permissions.
+                        Unable to load data. Please ensure the Google Sheet's sharing settings are set to "Anyone with the link can view".
                     </div>`;
                 console.error('Error fetching data:', error);
             }
@@ -390,7 +339,7 @@
             currentAudio = new Audio(url);
             currentAudio.play().catch(e => {
                 console.error("Audio playback failed:", e);
-                alert("Audio playback failed. Check browser permissions or Google Drive access.");
+                alert("Audio playback failed. The browser might be blocking the audio or the Google Drive file is restricted.");
             });
         }
 
