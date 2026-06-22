@@ -33,50 +33,62 @@
             font-size: 2.5rem;
         }
 
+        /* The main structural container holds phrases vertically */
         #guide-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 4rem; /* Generous spacing between distinct lines/phrases */
             width: 100%;
-            max-width: 1200px;
+            max-width: 1400px;
+        }
+
+        /* Each phrase row groups characters together horizontally */
+        .phrase-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.25rem;
+            justify-content: center;
+            width: 100%;
         }
 
         .card {
             background: var(--card-bg);
             border-radius: 16px;
-            padding: 2.5rem 1.5rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+            padding: 2rem 1.25rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
+            flex: 0 1 150px; /* Gives cards a uniform starting width */
+            min-width: 130px;
         }
 
         .card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08);
         }
 
         .character {
-            font-size: 5rem;
+            font-size: 4.5rem;
             font-weight: 500;
-            line-height: 1;
-            margin-bottom: 1rem;
+            line-height: 1.1;
+            margin-bottom: 0.75rem;
             color: var(--primary-color);
         }
 
         .jyutping {
-            font-size: 1.75rem;
+            font-size: 1.5rem;
             font-weight: 400;
             margin-bottom: 0.25rem;
             color: var(--primary-color);
         }
 
         .ipa {
-            font-size: 1.25rem;
+            font-size: 1.1rem;
             color: var(--text-muted);
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
             font-family: "Charis SIL", "Doulos SIL", "Times New Roman", serif;
         }
 
@@ -85,14 +97,15 @@
             color: white;
             border: none;
             border-radius: 50%;
-            width: 70px;
-            height: 70px;
+            width: 60px;
+            height: 60px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             transition: background-color 0.2s, transform 0.1s;
-            box-shadow: 0 4px 10px rgba(74, 144, 226, 0.3);
+            box-shadow: 0 4px 10px rgba(74, 144, 226, 0.25);
+            margin-top: auto; /* Pushes button to bottom if cards vary in text height */
         }
 
         .play-btn:hover {
@@ -105,17 +118,16 @@
         }
 
         .play-btn svg {
-            width: 32px;
-            height: 32px;
+            width: 28px;
+            height: 28px;
             fill: currentColor;
-            margin-left: 6px; /* Optical alignment for the play triangle */
+            margin-left: 4px; /* Optical adjustment for play arrow placement */
         }
 
         .loading, .error {
             font-size: 1.25rem;
             color: var(--text-muted);
             text-align: center;
-            grid-column: 1 / -1;
             padding: 2rem;
         }
 
@@ -132,12 +144,10 @@
     </div>
 
     <script>
-        // Google Sheet Setup
         const sheetId = '1Y6yB_tXm1ETFR7lzqlt7NqgA1EXmuszpn7PSlW4xMzg';
         const gid = '130844584';
         const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}`;
 
-        // Helper function to extract the Google Drive file ID and create a direct download link
         function getDirectAudioUrl(url) {
             if (!url) return '';
             const fileIdMatch = url.match(/[-\w]{25,}/);
@@ -147,7 +157,6 @@
             return url;
         }
 
-        // Robust CSV Parser
         function parseCSV(str) {
             const result = [];
             let row = [];
@@ -189,28 +198,45 @@
                     throw new Error("No data found in the sheet.");
                 }
 
-                // Extract Headers
                 const headers = rows[0].map(h => h.toLowerCase());
                 const charIdx = headers.indexOf('character');
                 const jyutpingIdx = headers.indexOf('jyutping');
                 const ipaIdx = headers.indexOf('ipa');
                 const audioIdx = headers.indexOf('audio');
 
-                container.innerHTML = ''; // Clear loading message
+                container.innerHTML = ''; // Clear loading element
                 
-                // Start from index 1 to skip headers
+                // Track row segmentation
+                let currentPhraseRow = document.createElement('div');
+                currentPhraseRow.className = 'phrase-row';
+                container.appendChild(currentPhraseRow);
+                let activeCardsInRow = 0;
+
                 for (let i = 1; i < rows.length; i++) {
                     const row = rows[i];
-                    if (!row[charIdx]) continue; // Skip empty rows
+                    
+                    // Determine if the row is blank in the character column
+                    const isBlankRow = !row[charIdx] || row[charIdx].trim() === '';
 
-                    const char = row[charIdx] || '';
+                    if (isBlankRow) {
+                        // If we encounter a blank row and our active phrase row contains data,
+                        // prepare a brand new line container for the next batch of words.
+                        if (activeCardsInRow > 0) {
+                            currentPhraseRow = document.createElement('div');
+                            currentPhraseRow.className = 'phrase-row';
+                            container.appendChild(currentPhraseRow);
+                            activeCardsInRow = 0;
+                        }
+                        continue; 
+                    }
+
+                    const char = row[charIdx].trim();
                     const jyutping = row[jyutpingIdx] || '';
                     const ipa = row[ipaIdx] || '';
                     const audioUrl = getDirectAudioUrl(row[audioIdx] || '');
 
                     const card = document.createElement('div');
                     card.className = 'card';
-                    
                     card.innerHTML = `
                         <div class="character">${char}</div>
                         <div class="jyutping">${jyutping}</div>
@@ -223,8 +249,16 @@
                         </button>
                         ` : ''}
                     `;
-                    container.appendChild(card);
+                    
+                    currentPhraseRow.appendChild(card);
+                    activeCardsInRow++;
                 }
+
+                // Clean up trailing empty line element if the sheet ended with a blank space
+                if (activeCardsInRow === 0 && currentPhraseRow.parentNode) {
+                    currentPhraseRow.remove();
+                }
+
             } catch (error) {
                 container.innerHTML = `
                     <div class="error">
@@ -234,7 +268,6 @@
             }
         }
 
-        // Global audio element to prevent overlapping playbacks
         let currentAudio = null;
         window.playAudio = function(url) {
             if (currentAudio) {
@@ -248,7 +281,6 @@
             });
         }
 
-        // Initialize the app
         fetchAndRenderData();
     </script>
 </body>
