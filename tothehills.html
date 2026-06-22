@@ -6,197 +6,253 @@
     <title>Cantonese Pronunciation Guide</title>
     <style>
         :root {
-            --primary-color: #2c3e50;
-            --bg-color: #f4f6f8;
-            --card-bg: #ffffff;
-            --text-main: #333333;
-            --text-muted: #666666;
-            --accent-color: #4a90e2;
+            /* Grok-inspired dark cosmic palette */
+            --bg-color: #0a0a0a;
+            --surface-color: #121212;
+            --card-bg: #1a1a1a;
+            --text-primary: #f0f0f0;
+            --text-secondary: #b0b0b0;
+            --accent: #00eaff;
+            --accent-soft: #00b8cc;
+            --border-color: rgba(0, 234, 255, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
         }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-color);
-            color: var(--text-main);
+            color: var(--text-primary);
             margin: 0;
-            padding: 2rem 1rem;
+            padding: 3rem 1rem 4rem;
             display: flex;
             flex-direction: column;
             align-items: center;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 4rem;
+            width: 100%;
+            max-width: 1200px;
         }
 
         h1 {
+            font-size: 3.2rem;
             font-weight: 300;
-            color: var(--primary-color);
-            margin-bottom: 2.5rem;
-            text-align: center;
-            font-size: 2.2rem;
+            letter-spacing: -0.03em;
+            margin: 0 0 0.5rem 0;
+            background: linear-gradient(90deg, #ffffff, var(--accent), #ffffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+            letter-spacing: 0.5px;
+            opacity: 0.85;
         }
 
         #guide-container {
             display: flex;
             flex-direction: column;
             width: 100%;
-            max-width: 1280px; /* Perfectly aligns with the 10-card ceiling */
+            max-width: 1280px;
             align-items: center;
         }
 
-        /* Responsive Grid Framework */
+        /* Responsive Grid */
         .phrase-row {
             display: grid;
-            /* Mobile Default: Scaled down to fit at least 5 characters on small screens */
-            grid-template-columns: repeat(auto-fill, minmax(58px, 1fr));
-            gap: 8px;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 24px;
             width: 100%;
             justify-content: center;
         }
 
         .card {
             background: var(--card-bg);
-            border-radius: 12px;
-            padding: 1rem 0.25rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2.25rem 1.25rem 2rem;
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 50% 20%, rgba(0, 234, 255, 0.08), transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
         }
 
         .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 14px rgba(0,0,0,0.08);
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px -10px rgba(0, 234, 255, 0.15);
+            border-color: rgba(0, 234, 255, 0.3);
         }
 
-        /* Mobile Typography Scaling */
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        /* Typography */
         .character {
-            font-size: 2.4rem;
+            font-size: 5.2rem;
             font-weight: 500;
-            line-height: 1.1;
-            margin-bottom: 0.4rem;
-            color: var(--primary-color);
+            line-height: 1;
+            margin-bottom: 1rem;
+            color: #ffffff;
+            transition: transform 0.2s ease;
+        }
+
+        .card:hover .character {
+            transform: scale(1.08);
         }
 
         .jyutping {
-            font-size: 0.85rem;
+            font-size: 1.35rem;
             font-weight: 500;
-            margin-bottom: 0.1rem;
-            color: var(--primary-color);
-            word-break: break-word;
+            margin-bottom: 0.4rem;
+            color: var(--accent);
+            letter-spacing: 0.5px;
         }
 
         .ipa {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            margin-bottom: 0.8rem;
-            font-family: "Charis SIL", "Doulos SIL", "Times New Roman", serif;
-            word-break: break-word;
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.75rem;
+            font-family: "Charis SIL", "Doulos SIL", Georgia, serif;
+            letter-spacing: 0.5px;
         }
 
         .play-btn {
-            background-color: var(--accent-color);
-            color: white;
-            border: none;
+            background: transparent;
+            border: 2px solid var(--accent);
+            color: var(--accent);
             border-radius: 50%;
-            width: 42px;
-            height: 42px;
+            width: 58px;
+            height: 58px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            box-shadow: 0 3px 6px rgba(74, 144, 226, 0.2);
-            margin-top: auto; /* Keeps buttons level if text heights vary slightly */
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+            margin-top: auto;
+        }
+
+        .play-btn:hover {
+            background: var(--accent);
+            color: #0a0a0a;
+            transform: scale(1.1);
+            box-shadow: 0 0 25px rgba(0, 234, 255, 0.6);
         }
 
         .play-btn svg {
-            width: 18px;
-            height: 18px;
+            width: 26px;
+            height: 26px;
             fill: currentColor;
             margin-left: 3px;
         }
 
-        /* Minimalist Phrase Divider Line */
+        /* Elegant Divider */
         .divider {
             width: 100%;
-            border: none;
+            max-width: 680px;
             height: 1px;
-            background: linear-gradient(to right, transparent, #dcdfe3, transparent);
-            margin: 2.5rem 0;
+            background: linear-gradient(to right, transparent, var(--accent-soft), transparent);
+            margin: 4.5rem 0 3.5rem;
+            opacity: 0.6;
         }
 
         .loading, .error {
-            font-size: 1.1rem;
-            color: var(--text-muted);
+            font-size: 1.15rem;
+            color: var(--text-secondary);
             text-align: center;
-            padding: 2rem;
+            padding: 4rem 2rem;
+            font-style: italic;
         }
 
         .error {
-            color: #d32f2f;
+            color: #ff6b6b;
         }
 
-        /* Desktop Configurations (Screens 768px and wider) */
-        @media (min-width: 768px) {
+        /* Footer credit */
+        footer {
+            margin-top: 6rem;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            opacity: 0.7;
+            text-align: center;
+        }
+
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
             body {
-                padding: 3rem 2rem;
+                padding: 2rem 1rem 3rem;
             }
-
+            
             h1 {
-                font-size: 2.5rem;
-                margin-bottom: 4rem;
+                font-size: 2.6rem;
             }
-
-            /* Caps layout precisely at 10 items maximum per row */
+            
             .phrase-row {
                 grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-                gap: 20px;
-                max-width: 1280px; /* (110px * 10 cards) + (20px * 9 gaps) = 1280px */
+                gap: 16px;
             }
-
+            
             .card {
-                border-radius: 16px;
-                padding: 2.5rem 1rem;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+                padding: 1.75rem 1rem 1.5rem;
             }
-
+            
             .character {
-                font-size: 4.5rem;
-                margin-bottom: 0.75rem;
+                font-size: 3.8rem;
             }
-
+            
             .jyutping {
-                font-size: 1.5rem;
-                margin-bottom: 0.25rem;
+                font-size: 1.15rem;
             }
-
-            .ipa {
-                font-size: 1.1rem;
-                margin-bottom: 1.5rem;
-            }
-
+            
             .play-btn {
-                width: 60px;
-                height: 60px;
+                width: 48px;
+                height: 48px;
             }
-
+            
             .play-btn svg {
-                width: 26px;
-                height: 26px;
-                margin-left: 4px;
-            }
-
-            .divider {
-                margin: 4rem 0;
+                width: 20px;
+                height: 20px;
             }
         }
     </style>
 </head>
 <body>
 
-    <h1>Pronunciation Guide</h1>
+    <header>
+        <h1>Pronunciation Guide</h1>
+        <p class="subtitle">Cantonese • Jyutping • IPA</p>
+    </header>
+
     <div id="guide-container">
-        <div class="loading">Loading guide from Google Sheets...</div>
+        <div class="loading">Connecting to the cosmos... Loading pronunciation data</div>
     </div>
+
+    <footer>
+        Elegant redesign • Inspired by curiosity
+    </footer>
 
     <script>
         const sheetId = '1Y6yB_tXm1ETFR7lzqlt7NqgA1EXmuszpn7PSlW4xMzg';
@@ -272,12 +328,10 @@
 
                     if (isBlankRow) {
                         if (activeCardsInRow > 0) {
-                            // 1. Insert elegant divider element
                             const divider = document.createElement('div');
                             divider.className = 'divider';
                             container.appendChild(divider);
 
-                            // 2. Open a clean, fresh structural row container
                             currentPhraseRow = document.createElement('div');
                             currentPhraseRow.className = 'phrase-row';
                             container.appendChild(currentPhraseRow);
@@ -310,7 +364,6 @@
                     activeCardsInRow++;
                 }
 
-                // Clean up defense: prevents empty trailing lines or dividers if the sheet concludes on blanks
                 if (activeCardsInRow === 0 && currentPhraseRow && currentPhraseRow.parentNode) {
                     currentPhraseRow.remove();
                     const trailingElement = container.lastElementChild;
@@ -322,7 +375,7 @@
             } catch (error) {
                 container.innerHTML = `
                     <div class="error">
-                        Unable to load data. Please verify your Google Sheet sharing permissions are configured properly.
+                        Unable to load data.<br>Please check Google Sheet permissions.
                     </div>`;
                 console.error('Error fetching data:', error);
             }
@@ -337,7 +390,7 @@
             currentAudio = new Audio(url);
             currentAudio.play().catch(e => {
                 console.error("Audio playback failed:", e);
-                alert("Audio playback failed. The browser might be blocking the audio or the Google Drive file is restricted.");
+                alert("Audio playback failed. Check browser permissions or Google Drive access.");
             });
         }
 
