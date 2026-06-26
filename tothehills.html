@@ -6,24 +6,25 @@
     <title>Cantonese Pronunciation Guide</title>
     <style>
         :root {
-            --primary-color: #2c3e50;
-            --bg-color: #f4f6f8;
+            /* Art Song Aesthetic Palette */
+            --primary-color: #1a1a1a; /* Deep charcoal almost black */
+            --bg-color: #fdfdfd; /* Crisp sheet-music white */
             --card-bg: #ffffff;
-            --text-main: #333333;
-            --text-muted: #666666;
-            --accent-color: #4a90e2;
+            --text-main: #222222;
+            --text-muted: #555555;
+            --accent-color: #2c2c2c; /* Elegant dark grey for buttons */
             
-            /* Desktop Layout Configuration */
-            --card-width: 115px;
+            /* Desktop Layout Configuration (Reversed Hierarchy) */
+            --card-width: 135px; /* Widened slightly to fit large romanization */
             --gap-size: 1rem;
-            --char-size: 3.5rem;
-            --jyutping-size: 1.25rem;
-            --ipa-size: 0.95rem;
-            --btn-size: 48px;
+            --char-size: 1.1rem;      /* Smallest */
+            --ipa-size: 1.35rem;      /* Medium */
+            --jyutping-size: 2.2rem;  /* Largest */
+            --btn-size: 44px;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
             margin: 0;
@@ -34,12 +35,13 @@
         }
 
         h1 {
-            font-weight: 300;
+            font-weight: 400;
             color: var(--primary-color);
             margin-bottom: 3rem;
             text-align: center;
             font-size: 2.2rem;
-            letter-spacing: 0.5px;
+            letter-spacing: 1px;
+            font-family: "Georgia", "Times New Roman", serif; /* Elegant serif for header */
         }
 
         #guide-container {
@@ -47,7 +49,7 @@
             flex-direction: column;
             align-items: center;
             width: 100%;
-            max-width: 1300px;
+            max-width: 1450px;
         }
 
         /* Desktop Mode: Flex wrapping limited to 10 cards max width */
@@ -57,16 +59,16 @@
             gap: var(--gap-size);
             justify-content: center;
             width: 100%;
-            /* Strict width constraint: 10 cards + 9 gaps */
             max-width: calc((var(--card-width) * 10) + (var(--gap-size) * 9));
             box-sizing: border-box;
         }
 
         .card {
             background: var(--card-bg);
-            border-radius: 14px;
+            border-radius: 8px; /* Sharper, more classic corners */
             padding: 1.5rem 0.5rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+            border: 1px solid #eaeaea; /* Subtle border typical of minimalist sites */
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -77,38 +79,38 @@
         }
 
         .card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 16px rgba(0,0,0,0.08);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.06);
         }
 
         .character {
             font-size: var(--char-size);
-            font-weight: 500;
-            line-height: 1.1;
+            font-weight: 400;
             margin-bottom: 0.5rem;
-            color: var(--primary-color);
+            color: var(--text-muted);
         }
 
         .jyutping {
             font-size: var(--jyutping-size);
-            font-weight: 400;
-            margin-bottom: 0.15rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
             color: var(--primary-color);
             word-break: break-all;
+            line-height: 1.1;
         }
 
         .ipa {
             font-size: var(--ipa-size);
             color: var(--text-muted);
             margin-bottom: 1.25rem;
-            font-family: "Charis SIL", "Doulos SIL", "Times New Roman", serif;
+            font-family: "Charis SIL", "Doulos SIL", "Georgia", serif;
             word-break: break-all;
         }
 
         .play-btn {
-            background-color: var(--accent-color);
-            color: white;
-            border: none;
+            background-color: var(--card-bg);
+            color: var(--accent-color);
+            border: 1px solid #cccccc;
             border-radius: 50%;
             width: var(--btn-size);
             height: var(--btn-size);
@@ -116,19 +118,19 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: background-color 0.2s, transform 0.1s;
-            box-shadow: 0 3px 8px rgba(74, 144, 226, 0.2);
+            transition: all 0.2s;
             margin-top: auto; 
         }
 
         .play-btn:hover {
-            background-color: #357abd;
-            transform: scale(1.05);
+            background-color: var(--accent-color);
+            color: #ffffff;
+            border-color: var(--accent-color);
         }
 
         .play-btn svg {
-            width: calc(var(--btn-size) * 0.45);
-            height: calc(var(--btn-size) * 0.45);
+            width: calc(var(--btn-size) * 0.4);
+            height: calc(var(--btn-size) * 0.4);
             fill: currentColor;
             margin-left: 3px;
         }
@@ -137,11 +139,10 @@
         .phrase-divider {
             border: none;
             height: 1px;
-            background-color: #dcdde1;
+            background-color: #dddddd;
             width: 100%;
-            max-width: 250px;
+            max-width: 200px;
             margin: 2.5rem auto;
-            opacity: 0.7;
         }
 
         .loading, .error {
@@ -149,15 +150,16 @@
             color: var(--text-muted);
             text-align: center;
             padding: 2rem;
+            font-style: italic;
         }
 
-        /* Mobile Viewport Engine: Enforces at least 5 columns dynamically */
+        /* Mobile Viewport Engine */
         @media (max-width: 650px) {
             :root {
                 --gap-size: 0.4rem;
-                --char-size: 2rem;
-                --jyutping-size: 0.85rem;
-                --ipa-size: 0.7rem;
+                --char-size: 0.9rem;
+                --jyutping-size: 1.4rem;
+                --ipa-size: 0.95rem;
                 --btn-size: 34px;
             }
 
@@ -172,7 +174,7 @@
 
             .phrase-row {
                 display: grid;
-                grid-template-columns: repeat(5, 1fr); /* Guarantees minimum 5 cards side by side */
+                grid-template-columns: repeat(5, 1fr); 
                 max-width: 100%;
                 padding: 0 0.25rem;
             }
@@ -180,12 +182,12 @@
             .card {
                 width: 100%; 
                 padding: 1rem 0.15rem;
-                border-radius: 10px;
+                border-radius: 6px;
             }
             
             .phrase-divider {
                 margin: 1.75rem auto;
-                max-width: 150px;
+                max-width: 100px;
             }
         }
     </style>
@@ -279,7 +281,6 @@
                         continue; 
                     }
 
-                    // If a divider is flagged as pending, safely insert it before rendering the next row
                     if (dividerPending) {
                         const divider = document.createElement('hr');
                         divider.className = 'phrase-divider';
@@ -316,7 +317,6 @@
                     activeCardsInRow++;
                 }
 
-                // Layout cleanup condition for hanging rows
                 if (activeCardsInRow === 0 && currentPhraseRow.childNodes.length === 0) {
                     currentPhraseRow.remove();
                 }
