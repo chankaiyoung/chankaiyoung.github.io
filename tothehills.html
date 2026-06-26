@@ -13,6 +13,7 @@
             --text-main: #333336;
             --text-muted: #86868b;
             --accent-color: #1d1d1f; 
+            --divider-color: #e5e5e7;
             
             /* Desktop Layout Configuration */
             --card-width: 140px; 
@@ -48,102 +49,131 @@
             flex-direction: column;
             align-items: center;
             width: 100%;
-            max-width: 1450px;
-            gap: 1.25rem;
-        }
-
-        /* --- Accordion (Details/Summary) Styles --- */
-        details {
-            background: var(--card-bg);
-            border-radius: 18px;
-            width: 100%;
             max-width: calc((var(--card-width) * 10) + (var(--gap-size) * 9) + 4rem);
-            box-shadow: 0 4px 14px rgba(0,0,0,0.03);
-            overflow: hidden;
-            transition: box-shadow 0.2s ease;
         }
 
-        details[open] {
-            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+        /* --- Crisp, Flat Accordion Structure --- */
+        details {
+            background: transparent;
+            width: 100%;
+            border-bottom: 1px solid var(--divider-color);
+            overflow: hidden;
+        }
+
+        /* First row gets a top border to frame the stack neatly */
+        details:first-of-type {
+            border-top: 1px solid var(--divider-color);
         }
 
         summary {
-            padding: 1.5rem 2rem;
+            padding: 1.75rem 1rem;
             cursor: pointer;
-            list-style: none; /* Removes default arrow */
+            list-style: none; 
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background-color: var(--card-bg);
+            background-color: transparent;
+            user-select: none;
         }
 
         summary::-webkit-details-marker {
-            display: none; /* Removes default arrow in Safari */
+            display: none; 
         }
 
-        summary:hover {
-            background-color: #fcfcfc;
+        /* --- Minimalist Plus Sign Transformation Icon --- */
+        .plus-icon {
+            width: 16px;
+            height: 16px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-left: 1.5rem;
+        }
+
+        .plus-icon span {
+            position: absolute;
+            background-color: var(--text-main);
+            transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1), background-color 0.35s ease;
+        }
+
+        /* Horizontal bar */
+        .plus-icon span:first-child {
+            width: 16px;
+            height: 2px;
+        }
+
+        /* Vertical bar */
+        .plus-icon span:last-child {
+            width: 2px;
+            height: 16px;
+        }
+
+        /* Fluid transition to a Minus Sign on expansion */
+        details[open] .plus-icon span:last-child {
+            transform: rotate(90deg);
         }
 
         .summary-content {
             display: flex;
             flex-direction: column;
-            gap: 0.4rem;
+            gap: 0.35rem;
         }
 
         .summary-zh {
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             font-weight: 500;
             color: var(--primary-color);
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
         }
 
         .summary-en {
-            font-size: 1rem;
+            font-size: 0.95rem;
             color: var(--text-muted);
             font-weight: 400;
         }
 
-        .chevron {
-            width: 24px;
-            height: 24px;
-            fill: var(--text-muted);
-            transition: transform 0.3s ease;
-            flex-shrink: 0;
-            margin-left: 1rem;
-        }
-
-        details[open] summary .chevron {
-            transform: rotate(180deg);
-        }
-
-        /* --- Render Card Row Styles --- */
+        /* --- Elegant Expansion Effects --- */
         .phrase-row {
             display: flex;
             flex-wrap: wrap;
             gap: var(--gap-size);
             justify-content: center;
             width: 100%;
-            padding: 1rem 2rem 2.5rem 2rem;
+            padding: 0 1rem 2.5rem 1rem;
             box-sizing: border-box;
-            border-top: 1px solid #f0f0f0;
+            
+            /* Initial state for animation */
+            opacity: 0;
+            transform: translateY(-8px);
+            transition: opacity 0.4s cubic-bezier(0.25, 1, 0.5, 1), transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
+        /* Trigger fluid transition once native browser details opens */
+        details[open] .phrase-row {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- Render Cards (Retaining soft geometry) --- */
         .card {
-            background: var(--bg-color); /* Slight contrast against the white details container */
+            background: var(--card-bg); 
             border-radius: 14px;
             padding: 1.5rem 0.75rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
             width: var(--card-width);
             box-sizing: border-box;
-            transition: transform 0.2s ease;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
         .card:hover {
             transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.05);
         }
 
         .jyutping {
@@ -224,17 +254,17 @@
             }
             
             summary {
-                padding: 1.25rem 1rem;
+                padding: 1.35rem 0.5rem;
             }
 
             .summary-zh {
-                font-size: 1.25rem;
+                font-size: 1.2rem;
             }
 
             .phrase-row {
                 display: grid;
                 grid-template-columns: repeat(5, 1fr); 
-                padding: 1rem 0.5rem 1.5rem 0.5rem;
+                padding: 0 0.25rem 1.75rem 0.25rem;
             }
 
             .card {
@@ -257,11 +287,12 @@
         const gid = '130844584';
         const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}`;
 
-        // SVG code for the dropdown arrow
-        const chevronIcon = `
-            <svg class="chevron" viewBox="0 0 24 24">
-                <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/>
-            </svg>
+        // Dynamic flat CSS transform icon structure
+        const plusMinusIcon = `
+            <div class="plus-icon" aria-hidden="true">
+                <span></span>
+                <span></span>
+            </div>
         `;
 
         function getDirectAudioUrl(url) {
@@ -302,24 +333,21 @@
             return result;
         }
 
-        // Helper function to build and append an accordion block
         function appendPhraseBlock(container, cardsHtml, phraseTitle, phraseTranslation) {
             if (!cardsHtml) return;
 
             const details = document.createElement('details');
-            
-            // Generate the summary tab
             let translationHtml = phraseTranslation ? `<span class="summary-en">${phraseTranslation}</span>` : '';
+            
             const summary = document.createElement('summary');
             summary.innerHTML = `
                 <div class="summary-content">
                     <span class="summary-zh">${phraseTitle}</span>
                     ${translationHtml}
                 </div>
-                ${chevronIcon}
+                ${plusMinusIcon}
             `;
             
-            // Generate the row container for the cards
             const phraseRow = document.createElement('div');
             phraseRow.className = 'phrase-row';
             phraseRow.innerHTML = cardsHtml;
@@ -345,7 +373,6 @@
                 const ipaIdx = headers.indexOf('ipa');
                 const audioIdx = headers.indexOf('audio');
                 
-                // Allow dynamic fetching of an English translation if a column is added
                 let transIdx = headers.indexOf('translation');
                 if (transIdx === -1) transIdx = headers.indexOf('english');
 
@@ -360,10 +387,8 @@
                     const isBlankRow = !row[charIdx] || row[charIdx].trim() === '';
 
                     if (isBlankRow) {
-                        // End of a phrase block, render the accumulated data
                         if (currentCardsHtml) {
                             appendPhraseBlock(container, currentCardsHtml, currentPhraseTitle, currentPhraseTranslation);
-                            // Reset for the next block
                             currentCardsHtml = '';
                             currentPhraseTitle = '';
                             currentPhraseTranslation = '';
@@ -376,7 +401,6 @@
                     const ipa = row[ipaIdx] || '';
                     const audioUrl = getDirectAudioUrl(row[audioIdx] || '');
                     
-                    // Grab translation if it exists in this row
                     if (transIdx !== -1 && row[transIdx] && row[transIdx].trim() !== '') {
                         currentPhraseTranslation = row[transIdx].trim();
                     }
@@ -399,7 +423,6 @@
                     `;
                 }
 
-                // Catch the final phrase if the file didn't end on a blank row
                 if (currentCardsHtml) {
                     appendPhraseBlock(container, currentCardsHtml, currentPhraseTitle, currentPhraseTranslation);
                 }
