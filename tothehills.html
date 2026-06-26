@@ -6,25 +6,25 @@
     <title>Cantonese Pronunciation Guide</title>
     <style>
         :root {
-            /* Art Song Aesthetic Palette */
-            --primary-color: #1a1a1a; /* Deep charcoal almost black */
-            --bg-color: #fdfdfd; /* Crisp sheet-music white */
+            /* Sleek, professional minimalist palette */
+            --primary-color: #1d1d1f;
+            --bg-color: #f5f5f7;
             --card-bg: #ffffff;
-            --text-main: #222222;
-            --text-muted: #555555;
-            --accent-color: #2c2c2c; /* Elegant dark grey for buttons */
+            --text-main: #333336;
+            --text-muted: #86868b;
+            --accent-color: #1d1d1f; 
             
-            /* Desktop Layout Configuration (Reversed Hierarchy) */
-            --card-width: 135px; /* Widened slightly to fit large romanization */
+            /* Desktop Layout Configuration */
+            --card-width: 140px; 
             --gap-size: 1rem;
-            --char-size: 1.1rem;      /* Smallest */
-            --ipa-size: 1.35rem;      /* Medium */
-            --jyutping-size: 2.2rem;  /* Largest */
-            --btn-size: 44px;
+            --jyutping-size: 2.2rem;
+            --ipa-size: 1.3rem;
+            --char-size: 1.1rem;
+            --btn-size: 48px;
         }
 
         body {
-            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
             margin: 0;
@@ -40,8 +40,7 @@
             margin-bottom: 3rem;
             text-align: center;
             font-size: 2.2rem;
-            letter-spacing: 1px;
-            font-family: "Georgia", "Times New Roman", serif; /* Elegant serif for header */
+            letter-spacing: -0.5px;
         }
 
         #guide-container {
@@ -50,67 +49,132 @@
             align-items: center;
             width: 100%;
             max-width: 1450px;
+            gap: 1.25rem;
         }
 
-        /* Desktop Mode: Flex wrapping limited to 10 cards max width */
+        /* --- Accordion (Details/Summary) Styles --- */
+        details {
+            background: var(--card-bg);
+            border-radius: 18px;
+            width: 100%;
+            max-width: calc((var(--card-width) * 10) + (var(--gap-size) * 9) + 4rem);
+            box-shadow: 0 4px 14px rgba(0,0,0,0.03);
+            overflow: hidden;
+            transition: box-shadow 0.2s ease;
+        }
+
+        details[open] {
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+        }
+
+        summary {
+            padding: 1.5rem 2rem;
+            cursor: pointer;
+            list-style: none; /* Removes default arrow */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--card-bg);
+        }
+
+        summary::-webkit-details-marker {
+            display: none; /* Removes default arrow in Safari */
+        }
+
+        summary:hover {
+            background-color: #fcfcfc;
+        }
+
+        .summary-content {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .summary-zh {
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: var(--primary-color);
+            letter-spacing: 1px;
+        }
+
+        .summary-en {
+            font-size: 1rem;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .chevron {
+            width: 24px;
+            height: 24px;
+            fill: var(--text-muted);
+            transition: transform 0.3s ease;
+            flex-shrink: 0;
+            margin-left: 1rem;
+        }
+
+        details[open] summary .chevron {
+            transform: rotate(180deg);
+        }
+
+        /* --- Render Card Row Styles --- */
         .phrase-row {
             display: flex;
             flex-wrap: wrap;
             gap: var(--gap-size);
             justify-content: center;
             width: 100%;
-            max-width: calc((var(--card-width) * 10) + (var(--gap-size) * 9));
+            padding: 1rem 2rem 2.5rem 2rem;
             box-sizing: border-box;
+            border-top: 1px solid #f0f0f0;
         }
 
         .card {
-            background: var(--card-bg);
-            border-radius: 8px; /* Sharper, more classic corners */
-            padding: 1.5rem 0.5rem;
-            border: 1px solid #eaeaea; /* Subtle border typical of minimalist sites */
-            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            background: var(--bg-color); /* Slight contrast against the white details container */
+            border-radius: 14px;
+            padding: 1.5rem 0.75rem;
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
             width: var(--card-width);
             box-sizing: border-box;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            transition: transform 0.2s ease;
         }
 
         .card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(0,0,0,0.06);
-        }
-
-        .character {
-            font-size: var(--char-size);
-            font-weight: 400;
-            margin-bottom: 0.5rem;
-            color: var(--text-muted);
         }
 
         .jyutping {
             font-size: var(--jyutping-size);
             font-weight: 600;
-            margin-bottom: 0.25rem;
-            color: var(--primary-color);
-            word-break: break-all;
             line-height: 1.1;
+            margin-bottom: 0.4rem;
+            color: var(--primary-color);
+            word-break: break-word;
+            letter-spacing: -0.5px;
         }
 
         .ipa {
             font-size: var(--ipa-size);
+            color: var(--text-main);
+            margin-bottom: 0.75rem;
+            font-family: "Charis SIL", "Doulos SIL", "Times New Roman", serif;
+            word-break: break-word;
+        }
+
+        .character {
+            font-size: var(--char-size);
+            font-weight: 400;
             color: var(--text-muted);
-            margin-bottom: 1.25rem;
-            font-family: "Charis SIL", "Doulos SIL", "Georgia", serif;
-            word-break: break-all;
+            margin-bottom: 1.5rem;
         }
 
         .play-btn {
-            background-color: var(--card-bg);
-            color: var(--accent-color);
-            border: 1px solid #cccccc;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
             border-radius: 50%;
             width: var(--btn-size);
             height: var(--btn-size);
@@ -118,31 +182,20 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: background-color 0.2s, transform 0.1s;
             margin-top: auto; 
         }
 
         .play-btn:hover {
-            background-color: var(--accent-color);
-            color: #ffffff;
-            border-color: var(--accent-color);
+            background-color: #424245;
+            transform: scale(1.05);
         }
 
         .play-btn svg {
-            width: calc(var(--btn-size) * 0.4);
-            height: calc(var(--btn-size) * 0.4);
+            width: calc(var(--btn-size) * 0.45);
+            height: calc(var(--btn-size) * 0.45);
             fill: currentColor;
             margin-left: 3px;
-        }
-
-        /* Minimalist phrase separation line */
-        .phrase-divider {
-            border: none;
-            height: 1px;
-            background-color: #dddddd;
-            width: 100%;
-            max-width: 200px;
-            margin: 2.5rem auto;
         }
 
         .loading, .error {
@@ -150,17 +203,15 @@
             color: var(--text-muted);
             text-align: center;
             padding: 2rem;
-            font-style: italic;
         }
 
-        /* Mobile Viewport Engine */
         @media (max-width: 650px) {
             :root {
                 --gap-size: 0.4rem;
-                --char-size: 0.9rem;
-                --jyutping-size: 1.4rem;
+                --jyutping-size: 1.35rem;
                 --ipa-size: 0.95rem;
-                --btn-size: 34px;
+                --char-size: 0.85rem;
+                --btn-size: 36px;
             }
 
             body {
@@ -171,23 +222,25 @@
                 font-size: 1.6rem;
                 margin-bottom: 2rem;
             }
+            
+            summary {
+                padding: 1.25rem 1rem;
+            }
+
+            .summary-zh {
+                font-size: 1.25rem;
+            }
 
             .phrase-row {
                 display: grid;
                 grid-template-columns: repeat(5, 1fr); 
-                max-width: 100%;
-                padding: 0 0.25rem;
+                padding: 1rem 0.5rem 1.5rem 0.5rem;
             }
 
             .card {
                 width: 100%; 
                 padding: 1rem 0.15rem;
-                border-radius: 6px;
-            }
-            
-            .phrase-divider {
-                margin: 1.75rem auto;
-                max-width: 100px;
+                border-radius: 10px;
             }
         }
     </style>
@@ -203,6 +256,13 @@
         const sheetId = '1Y6yB_tXm1ETFR7lzqlt7NqgA1EXmuszpn7PSlW4xMzg';
         const gid = '130844584';
         const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}`;
+
+        // SVG code for the dropdown arrow
+        const chevronIcon = `
+            <svg class="chevron" viewBox="0 0 24 24">
+                <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/>
+            </svg>
+        `;
 
         function getDirectAudioUrl(url) {
             if (!url) return '';
@@ -242,6 +302,33 @@
             return result;
         }
 
+        // Helper function to build and append an accordion block
+        function appendPhraseBlock(container, cardsHtml, phraseTitle, phraseTranslation) {
+            if (!cardsHtml) return;
+
+            const details = document.createElement('details');
+            
+            // Generate the summary tab
+            let translationHtml = phraseTranslation ? `<span class="summary-en">${phraseTranslation}</span>` : '';
+            const summary = document.createElement('summary');
+            summary.innerHTML = `
+                <div class="summary-content">
+                    <span class="summary-zh">${phraseTitle}</span>
+                    ${translationHtml}
+                </div>
+                ${chevronIcon}
+            `;
+            
+            // Generate the row container for the cards
+            const phraseRow = document.createElement('div');
+            phraseRow.className = 'phrase-row';
+            phraseRow.innerHTML = cardsHtml;
+
+            details.appendChild(summary);
+            details.appendChild(phraseRow);
+            container.appendChild(details);
+        }
+
         async function fetchAndRenderData() {
             const container = document.getElementById('guide-container');
             try {
@@ -250,75 +337,71 @@
                 const text = await response.text();
                 
                 const rows = parseCSV(text);
-                if (rows.length < 2) {
-                    throw new Error("No data found in the sheet.");
-                }
+                if (rows.length < 2) throw new Error("No data found in the sheet.");
 
                 const headers = rows[0].map(h => h.toLowerCase());
                 const charIdx = headers.indexOf('character');
                 const jyutpingIdx = headers.indexOf('jyutping');
                 const ipaIdx = headers.indexOf('ipa');
                 const audioIdx = headers.indexOf('audio');
+                
+                // Allow dynamic fetching of an English translation if a column is added
+                let transIdx = headers.indexOf('translation');
+                if (transIdx === -1) transIdx = headers.indexOf('english');
 
                 container.innerHTML = ''; 
                 
-                let currentPhraseRow = document.createElement('div');
-                currentPhraseRow.className = 'phrase-row';
-                container.appendChild(currentPhraseRow);
-                
-                let activeCardsInRow = 0;
-                let dividerPending = false;
+                let currentCardsHtml = '';
+                let currentPhraseTitle = '';
+                let currentPhraseTranslation = '';
 
                 for (let i = 1; i < rows.length; i++) {
                     const row = rows[i];
                     const isBlankRow = !row[charIdx] || row[charIdx].trim() === '';
 
                     if (isBlankRow) {
-                        if (activeCardsInRow > 0) {
-                            dividerPending = true;
-                            activeCardsInRow = 0;
+                        // End of a phrase block, render the accumulated data
+                        if (currentCardsHtml) {
+                            appendPhraseBlock(container, currentCardsHtml, currentPhraseTitle, currentPhraseTranslation);
+                            // Reset for the next block
+                            currentCardsHtml = '';
+                            currentPhraseTitle = '';
+                            currentPhraseTranslation = '';
                         }
                         continue; 
-                    }
-
-                    if (dividerPending) {
-                        const divider = document.createElement('hr');
-                        divider.className = 'phrase-divider';
-                        container.appendChild(divider);
-                        
-                        currentPhraseRow = document.createElement('div');
-                        currentPhraseRow.className = 'phrase-row';
-                        container.appendChild(currentPhraseRow);
-                        
-                        dividerPending = false;
                     }
 
                     const char = row[charIdx].trim();
                     const jyutping = row[jyutpingIdx] || '';
                     const ipa = row[ipaIdx] || '';
                     const audioUrl = getDirectAudioUrl(row[audioIdx] || '');
-
-                    const card = document.createElement('div');
-                    card.className = 'card';
-                    card.innerHTML = `
-                        <div class="character">${char}</div>
-                        <div class="jyutping">${jyutping}</div>
-                        <div class="ipa">[${ipa}]</div>
-                        ${audioUrl ? `
-                        <button class="play-btn" aria-label="Play audio for ${char}" onclick="playAudio('${audioUrl}')">
-                            <svg viewBox="0 0 24 24">
-                                <path d="M8 5v14l11-7z"/>
-                            </svg>
-                        </button>
-                        ` : ''}
-                    `;
                     
-                    currentPhraseRow.appendChild(card);
-                    activeCardsInRow++;
+                    // Grab translation if it exists in this row
+                    if (transIdx !== -1 && row[transIdx] && row[transIdx].trim() !== '') {
+                        currentPhraseTranslation = row[transIdx].trim();
+                    }
+
+                    currentPhraseTitle += char;
+
+                    currentCardsHtml += `
+                        <div class="card">
+                            <div class="jyutping">${jyutping}</div>
+                            <div class="ipa">[${ipa}]</div>
+                            <div class="character">${char}</div>
+                            ${audioUrl ? `
+                            <button class="play-btn" aria-label="Play audio for ${char}" onclick="playAudio('${audioUrl}')">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M8 5v14l11-7z"/>
+                                </svg>
+                            </button>
+                            ` : ''}
+                        </div>
+                    `;
                 }
 
-                if (activeCardsInRow === 0 && currentPhraseRow.childNodes.length === 0) {
-                    currentPhraseRow.remove();
+                // Catch the final phrase if the file didn't end on a blank row
+                if (currentCardsHtml) {
+                    appendPhraseBlock(container, currentCardsHtml, currentPhraseTitle, currentPhraseTranslation);
                 }
 
             } catch (error) {
