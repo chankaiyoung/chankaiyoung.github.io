@@ -309,6 +309,7 @@
             return result;
         }
 
+        // Dynamically fetch the document title from Google Sheets
         async function fetchSheetTitle() {
             const h1 = document.getElementById('main-title');
             try {
@@ -340,7 +341,6 @@
             if (!cardsHtml) return;
 
             const details = document.createElement('details');
-            // Details are naturally closed by default. User must click to reveal the render-cards.
             
             let translationHtml = phraseTranslation ? `<span class="summary-en">${phraseTranslation}</span>` : '';
             
@@ -378,6 +378,7 @@
                 const ipaIdx = headers.indexOf('ipa');
                 const audioIdx = headers.indexOf('audio');
                 
+                // Look for Translation or English column
                 let transIdx = headers.indexOf('translation');
                 if (transIdx === -1) transIdx = headers.indexOf('english');
 
@@ -393,10 +394,10 @@
 
                     if (isBlankRow) {
                         if (currentCardsHtml) {
-                            // Dynamically uses the concatenated string of characters for this specific block
+                            // Close out the current block and render it
                             appendPhraseBlock(container, currentCardsHtml, currentPhraseTitle, currentPhraseTranslation);
                             
-                            // Reset for the next block
+                            // Reset variables for the next phrase block
                             currentCardsHtml = '';
                             currentPhraseTitle = '';
                             currentPhraseTranslation = '';
@@ -409,12 +410,12 @@
                     const ipa = row[ipaIdx] || '';
                     const audioUrl = getDirectAudioUrl(row[audioIdx] || '');
                     
-                    // Capture the English translation if it exists in this block
-                    if (transIdx !== -1 && row[transIdx] && row[transIdx].trim() !== '') {
+                    // Grabs the translation strictly from the FIRST row it encounters in a new phrase
+                    if (transIdx !== -1 && !currentPhraseTranslation && row[transIdx] && row[transIdx].trim() !== '') {
                         currentPhraseTranslation = row[transIdx].trim();
                     }
 
-                    // Dynamically build the title character by character
+                    // Dynamically concatenate characters for the main Chinese label
                     currentPhraseTitle += char;
 
                     currentCardsHtml += `
@@ -460,6 +461,7 @@
             });
         }
 
+        // Initialize tasks
         fetchSheetTitle();
         fetchAndRenderData();
     </script>
