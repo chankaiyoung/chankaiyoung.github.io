@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cantonese Pronunciation Guide</title>
+    <title>Loading Guide...</title>
     <style>
         :root {
             /* Sleek, professional minimalist palette */
@@ -20,7 +20,7 @@
             --gap-size: 1rem;
             --jyutping-size: 2.2rem;
             --ipa-size: 1.3rem;
-            --char-size: 1.1rem;
+            --char-size: 1.8rem; /* Balanced with IPA */
             --btn-size: 48px;
         }
 
@@ -42,6 +42,7 @@
             text-align: center;
             font-size: 2.2rem;
             letter-spacing: -0.5px;
+            transition: opacity 0.4s ease;
         }
 
         #guide-container {
@@ -60,7 +61,6 @@
             overflow: hidden;
         }
 
-        /* First row gets a top border to frame the stack neatly */
         details:first-of-type {
             border-top: 1px solid var(--divider-color);
         }
@@ -98,19 +98,9 @@
             transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1), background-color 0.35s ease;
         }
 
-        /* Horizontal bar */
-        .plus-icon span:first-child {
-            width: 16px;
-            height: 2px;
-        }
+        .plus-icon span:first-child { width: 16px; height: 2px; }
+        .plus-icon span:last-child { width: 2px; height: 16px; }
 
-        /* Vertical bar */
-        .plus-icon span:last-child {
-            width: 2px;
-            height: 16px;
-        }
-
-        /* Fluid transition to a Minus Sign on expansion */
         details[open] .plus-icon span:last-child {
             transform: rotate(90deg);
         }
@@ -144,19 +134,17 @@
             padding: 0 1rem 2.5rem 1rem;
             box-sizing: border-box;
             
-            /* Initial state for animation */
             opacity: 0;
             transform: translateY(-8px);
             transition: opacity 0.4s cubic-bezier(0.25, 1, 0.5, 1), transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
-        /* Trigger fluid transition once native browser details opens */
         details[open] .phrase-row {
             opacity: 1;
             transform: translateY(0);
         }
 
-        /* --- Render Cards (Retaining soft geometry) --- */
+        /* --- Render Cards --- */
         .card {
             background: var(--card-bg); 
             border-radius: 14px;
@@ -196,7 +184,7 @@
 
         .character {
             font-size: var(--char-size);
-            font-weight: 400;
+            font-weight: 500; 
             color: var(--text-muted);
             margin-bottom: 1.5rem;
         }
@@ -240,26 +228,14 @@
                 --gap-size: 0.4rem;
                 --jyutping-size: 1.35rem;
                 --ipa-size: 0.95rem;
-                --char-size: 0.85rem;
+                --char-size: 1.4rem;
                 --btn-size: 36px;
             }
 
-            body {
-                padding: 1.5rem 0.5rem;
-            }
-
-            h1 {
-                font-size: 1.6rem;
-                margin-bottom: 2rem;
-            }
-            
-            summary {
-                padding: 1.35rem 0.5rem;
-            }
-
-            .summary-zh {
-                font-size: 1.2rem;
-            }
+            body { padding: 1.5rem 0.5rem; }
+            h1 { font-size: 1.6rem; margin-bottom: 2rem; }
+            summary { padding: 1.35rem 0.5rem; }
+            .summary-zh { font-size: 1.2rem; }
 
             .phrase-row {
                 display: grid;
@@ -277,9 +253,10 @@
 </head>
 <body>
 
-    <h1>Pronunciation Guide</h1>
+    <h1 id="main-title">Loading...</h1>
+    
     <div id="guide-container">
-        <div class="loading">Loading guide from Google Sheets...</div>
+        <div class="loading">Parsing pronunciation data...</div>
     </div>
 
     <script>
@@ -287,7 +264,6 @@
         const gid = '130844584';
         const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}`;
 
-        // Dynamic flat CSS transform icon structure
         const plusMinusIcon = `
             <div class="plus-icon" aria-hidden="true">
                 <span></span>
@@ -333,10 +309,39 @@
             return result;
         }
 
+        async function fetchSheetTitle() {
+            const h1 = document.getElementById('main-title');
+            try {
+                const publicUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/htmlview`;
+                const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(publicUrl)}`;
+                
+                const response = await fetch(proxyUrl);
+                const data = await response.json();
+                
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(data.contents, "text/html");
+                let title = doc.querySelector('title').innerText;
+                
+                title = title.replace(' - Google Sheets', '').trim();
+                
+                if (title) {
+                    h1.innerText = title;
+                    document.title = title;
+                } else {
+                    h1.innerText = "Pronunciation Guide";
+                }
+            } catch (error) {
+                console.warn("Could not fetch dynamic sheet title.", error);
+                h1.innerText = "Pronunciation Guide";
+            }
+        }
+
         function appendPhraseBlock(container, cardsHtml, phraseTitle, phraseTranslation) {
             if (!cardsHtml) return;
 
             const details = document.createElement('details');
+            // Details are naturally closed by default. User must click to reveal the render-cards.
+            
             let translationHtml = phraseTranslation ? `<span class="summary-en">${phraseTranslation}</span>` : '';
             
             const summary = document.createElement('summary');
@@ -388,7 +393,10 @@
 
                     if (isBlankRow) {
                         if (currentCardsHtml) {
+                            // Dynamically uses the concatenated string of characters for this specific block
                             appendPhraseBlock(container, currentCardsHtml, currentPhraseTitle, currentPhraseTranslation);
+                            
+                            // Reset for the next block
                             currentCardsHtml = '';
                             currentPhraseTitle = '';
                             currentPhraseTranslation = '';
@@ -401,10 +409,12 @@
                     const ipa = row[ipaIdx] || '';
                     const audioUrl = getDirectAudioUrl(row[audioIdx] || '');
                     
+                    // Capture the English translation if it exists in this block
                     if (transIdx !== -1 && row[transIdx] && row[transIdx].trim() !== '') {
                         currentPhraseTranslation = row[transIdx].trim();
                     }
 
+                    // Dynamically build the title character by character
                     currentPhraseTitle += char;
 
                     currentCardsHtml += `
@@ -423,6 +433,7 @@
                     `;
                 }
 
+                // Catch the final block if the file didn't end with a blank row
                 if (currentCardsHtml) {
                     appendPhraseBlock(container, currentCardsHtml, currentPhraseTitle, currentPhraseTranslation);
                 }
@@ -449,6 +460,7 @@
             });
         }
 
+        fetchSheetTitle();
         fetchAndRenderData();
     </script>
 </body>
