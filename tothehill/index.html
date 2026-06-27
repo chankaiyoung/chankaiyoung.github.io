@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loading Guide...</title>
+    <title>IPA-Audio Pronunciation Guide - Eyes to the Hills 《向山舉目》發音指南</title>
     <style>
         :root {
             /* Sleek, professional minimalist palette */
@@ -253,10 +253,10 @@
 </head>
 <body>
 
-    <h1 id="main-title">Loading...</h1>
+    <h1 id="main-title">IPA-Audio Pronunciation Guide - Eyes to the Hills 《向山舉目》發音指南</h1>
     
     <div id="guide-container">
-        <div class="loading">Parsing pronunciation data...</div>
+        <div class="loading">Loading 載入中...</div>
     </div>
 
     <script>
@@ -309,33 +309,6 @@
             return result;
         }
 
-        // Dynamically fetch the document title from Google Sheets
-        async function fetchSheetTitle() {
-            const h1 = document.getElementById('main-title');
-            try {
-                const publicUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/htmlview`;
-                const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(publicUrl)}`;
-                
-                const response = await fetch(proxyUrl);
-                const data = await response.json();
-                
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(data.contents, "text/html");
-                let title = doc.querySelector('title').innerText;
-                
-                title = title.replace(' - Google Sheets', '').trim();
-                
-                if (title) {
-                    h1.innerText = title;
-                    document.title = title;
-                } else {
-                    h1.innerText = "Pronunciation Guide";
-                }
-            } catch (error) {
-                console.warn("Could not fetch dynamic sheet title.", error);
-                h1.innerText = "Pronunciation Guide";
-            }
-        }
 
         function appendPhraseBlock(container, cardsHtml, phraseTitle, phraseTranslation) {
             if (!cardsHtml) return;
