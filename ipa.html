@@ -265,12 +265,14 @@
             'to-the-hills': {
                 sheetId: '1Y6yB_tXm1ETFR7lzqlt7NqgA1EXmuszpn7PSlW4xMzg',
                 gid: '130844584',
-                title: 'Pronunciation Guide - To the Hills'
+                pageTitle: 'Pronunciation Guide - To the Hills',
+                headingHtml: 'Pronunciation Guide - To the Hills<br>《向山舉目》發音指南'
             },
             'alone-in-the-valley': {
                 sheetId: '1KAcftMXngupCqaTTUHIxXUpSDH1QKUzOP2f5nRE8IWs',
                 gid: '852255214',
-                title: 'Pronunciation Guide - Alone in the Valley《獨困幽谷》發音指南'
+                pageTitle: 'Pronunciation Guide - Alone in the Valley',
+                headingHtml: 'Pronunciation Guide - Alone in the Valley<br>《獨困幽谷》發音指南'
             }
         };
 
@@ -290,8 +292,8 @@
             document.getElementById('main-title').innerText = "Pronunciation Guide - Error";
         } else {
             // Setup title and API details
-            document.getElementById('main-title').innerHTML = config.title;
-            document.title = config.title;
+            document.getElementById('main-title').innerHTML = config.headingHtml;
+            document.title = config.pageTitle;
             const csvUrl = `https://docs.google.com/spreadsheets/d/${config.sheetId}/export?format=csv&gid=${config.gid}`;
 
             const plusMinusIcon = `
@@ -301,7 +303,7 @@
                 </div>
             `;
 
-            // --- 4. Updated Audio Directory Mapping ---
+            // --- 4. Audio Directory Mapping ---
             function getAudioPath(filename) {
                 if (!filename || filename.trim() === '') return '';
                 // Prepends the urlId as a directory structure
