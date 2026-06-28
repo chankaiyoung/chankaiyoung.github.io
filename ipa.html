@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pronunciation Guide</title>
+    <title>Pronunciation Guides 發音指南</title>
     <style>
         :root {
             /* Sleek, professional minimalist palette */
@@ -51,6 +51,51 @@
             align-items: center;
             width: 100%;
             max-width: calc((var(--card-width) * 10) + (var(--gap-size) * 9) + 4rem);
+        }
+
+        /* --- Linktree-Style Directory Buttons --- */
+        .directory-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            gap: 1.25rem;
+        }
+
+        .directory-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 500px;
+            background-color: var(--card-bg);
+            color: var(--primary-color);
+            text-decoration: none;
+            padding: 1.5rem 1rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            border: 1px solid transparent;
+            transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.2s ease, border-color 0.2s ease;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        .directory-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+            border-color: var(--divider-color);
+        }
+
+        .dir-en {
+            font-size: 1.15rem;
+            font-weight: 500;
+            margin-bottom: 0.35rem;
+        }
+
+        .dir-zh {
+            font-size: 1.1rem;
+            color: var(--text-muted);
         }
 
         /* --- Crisp, Flat Accordion Structure --- */
@@ -216,7 +261,7 @@
             margin-left: 3px;
         }
 
-        .loading, .error {
+        .loading {
             font-size: 1.1rem;
             color: var(--text-muted);
             text-align: center;
@@ -248,12 +293,16 @@
                 padding: 1rem 0.15rem;
                 border-radius: 10px;
             }
+
+            .directory-btn {
+                padding: 1.25rem 1rem;
+            }
         }
     </style>
 </head>
 <body>
 
-    <h1 id="main-title">Pronunciation Guide</h1>
+    <h1 id="main-title">Pronunciation Guides</h1>
     
     <div id="guide-container">
         <div class="loading">載入中 Loading...</div>
@@ -266,32 +315,50 @@
                 sheetId: '1Y6yB_tXm1ETFR7lzqlt7NqgA1EXmuszpn7PSlW4xMzg',
                 gid: '130844584',
                 pageTitle: 'Pronunciation Guide - To the Hills',
-                headingHtml: 'Pronunciation Guide - To the Hills<br>《向山舉目》發音指南'
+                headingHtml: 'Pronunciation Guide - To the Hills<br>《向山舉目》發音指南',
+                dirEn: 'Pronunciation Guide - To the Hills',
+                dirZh: '《向山舉目》發音指南'
             },
             'alone-in-the-valley': {
                 sheetId: '1KAcftMXngupCqaTTUHIxXUpSDH1QKUzOP2f5nRE8IWs',
                 gid: '852255214',
                 pageTitle: 'Pronunciation Guide - Alone in the Valley',
-                headingHtml: 'Pronunciation Guide - Alone in the Valley<br>《獨困幽谷》發音指南'
+                headingHtml: 'Pronunciation Guide - Alone in the Valley<br>《獨困幽谷》發音指南',
+                dirEn: 'Pronunciation Guide - Alone in the Valley',
+                dirZh: '《獨困幽谷》發音指南'
             }
         };
 
         // --- 2. URL Parameter Extraction ---
         const urlParams = new URLSearchParams(window.location.search);
         const urlId = urlParams.get('id');
-
-        // --- 3. Validate Configuration ---
-        const config = pageConfigs[urlId];
         const container = document.getElementById('guide-container');
+
+        // --- 3. Render Logic: Directory vs. Specific Guide ---
+        const config = pageConfigs[urlId];
         
         if (!config) {
-            container.innerHTML = `
-                <div class="error">
-                    Invalid or missing ID parameter. Please specify a valid ID in the URL (e.g., ?id=alone-in-the-valley).
-                </div>`;
-            document.getElementById('main-title').innerText = "Pronunciation Guide - Error";
+            // No valid ID found -> Render Linktree-style Directory
+            document.getElementById('main-title').innerHTML = "Pronunciation Guides<br>發音指南目錄";
+            document.title = "Pronunciation Guides Directory";
+            
+            let directoryHtml = '<div class="directory-container">';
+            
+            // Generate a button for every entry in pageConfigs
+            for (const [key, conf] of Object.entries(pageConfigs)) {
+                directoryHtml += `
+                    <a href="?id=${key}" class="directory-btn">
+                        <span class="dir-en">${conf.dirEn}</span>
+                        <span class="dir-zh">${conf.dirZh}</span>
+                    </a>
+                `;
+            }
+            
+            directoryHtml += '</div>';
+            container.innerHTML = directoryHtml;
+
         } else {
-            // Setup title and API details
+            // Valid ID found -> Render the Specific Pronunciation Guide
             document.getElementById('main-title').innerHTML = config.headingHtml;
             document.title = config.pageTitle;
             const csvUrl = `https://docs.google.com/spreadsheets/d/${config.sheetId}/export?format=csv&gid=${config.gid}`;
@@ -303,7 +370,6 @@
                 </div>
             `;
 
-            // --- 4. Audio Directory Mapping ---
             function getAudioPath(filename) {
                 if (!filename || filename.trim() === '') return '';
                 // Prepends the urlId as a directory structure
@@ -379,7 +445,6 @@
                     const ipaIdx = headers.indexOf('ipa');
                     const audioIdx = headers.indexOf('audio');
                     
-                    // Look for Translation or English column
                     let transIdx = headers.indexOf('translation');
                     if (transIdx === -1) transIdx = headers.indexOf('english');
 
@@ -395,10 +460,7 @@
 
                         if (isBlankRow) {
                             if (currentCardsHtml) {
-                                // Close out the current block and render it
                                 appendPhraseBlock(container, currentCardsHtml, currentPhraseTitle, currentPhraseTranslation);
-                                
-                                // Reset variables for the next phrase block
                                 currentCardsHtml = '';
                                 currentPhraseTitle = '';
                                 currentPhraseTranslation = '';
@@ -409,16 +471,12 @@
                         const char = row[charIdx].trim();
                         const jyutping = row[jyutpingIdx] || '';
                         const ipa = row[ipaIdx] || '';
-                        
-                        // Modified fetch for local directory audio
                         const audioUrl = getAudioPath(row[audioIdx] || '');
                         
-                        // Grabs the translation strictly from the FIRST row it encounters in a new phrase
                         if (transIdx !== -1 && !currentPhraseTranslation && row[transIdx] && row[transIdx].trim() !== '') {
                             currentPhraseTranslation = row[transIdx].trim();
                         }
 
-                        // Dynamically concatenate characters for the main Chinese label
                         currentPhraseTitle += char;
 
                         currentCardsHtml += `
@@ -437,14 +495,13 @@
                         `;
                     }
 
-                    // Catch the final block if the file didn't end with a blank row
                     if (currentCardsHtml) {
                         appendPhraseBlock(container, currentCardsHtml, currentPhraseTitle, currentPhraseTranslation);
                     }
 
                 } catch (error) {
                     container.innerHTML = `
-                        <div class="error">
+                        <div class="error" style="text-align: center; color: var(--text-muted); padding: 2rem;">
                             Unable to load data. Please ensure the Google Sheet's sharing settings are set to "Anyone with the link can view".
                         </div>`;
                     console.error('Error fetching data:', error);
@@ -464,7 +521,6 @@
                 });
             }
 
-            // Initialize tasks if config is valid
             fetchAndRenderData();
         }
     </script>
